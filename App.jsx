@@ -5,7 +5,8 @@ App = React.createClass({
 
     getMeteorData() {
         return {
-            feeds: Feeds.find({}).fetch()
+            feeds: Feeds.find({}).fetch(),
+            user: Meteor.user()
         }
     },
 
@@ -30,13 +31,33 @@ App = React.createClass({
         // Clear form
         ReactDOM.findDOMNode(this.refs.name).value = "";
         ReactDOM.findDOMNode(this.refs.url).value = "";
+
+        alert('feed added!');
     },
 
     render() {
+
+        //logged out view
+        if(!Meteor.user()){
+
+            return (
+
+                <div className="container">
+                    <header>
+                        <h1>Feed List</h1>
+                        <AccountsUIWrapper />
+                    </header>
+                </div>
+
+            );
+        }
+
+        //logged in view
         return (
             <div className="container">
                 <header>
                     <h1>Feed List</h1>
+                    <AccountsUIWrapper />
                     <form className="new-feed" onSubmit={this.handleSubmit}>
                         <input type="text" ref="name" placeholder="Feed Name" required />
                         <input type="url" ref="url" placeholder="Feed URL" required />
