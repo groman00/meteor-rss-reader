@@ -3,6 +3,9 @@
 //Collection of RSS Feeds
 Feeds = new Mongo.Collection("feeds");
 
+//Collection of RSS Feeds
+UserFeeds = new Mongo.Collection("userFeeds");
+
 
 
 if (Meteor.isClient) {

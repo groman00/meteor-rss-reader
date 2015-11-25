@@ -4,8 +4,19 @@ App = React.createClass({
     mixins: [ReactMeteorData],
 
     getMeteorData() {
+
+        var userFeeds = UserFeeds.find({userId:Meteor.userId()}).fetch();
+        var feedIds = userFeeds.map(function(feed) { 
+            return feed.feedId; 
+        });
+
+        //attach feed data to user each user feed
+        Feeds.find({_id:{$in:feedIds}}).map(function(doc, i, collection){
+            userFeeds[i].url = doc.url;
+        });
+
         return {
-            feeds: Feeds.find({}).fetch(),
+            feeds: userFeeds,
             user: Meteor.user()
         }
     },
@@ -19,20 +30,36 @@ App = React.createClass({
     handleSubmit(event) {
         event.preventDefault();
 
-        // Find the text field via the React ref
         var name = ReactDOM.findDOMNode(this.refs.name).value.trim();
         var url = ReactDOM.findDOMNode(this.refs.url).value.trim();
 
+        //Insert into general feed collection
+        //"url" is indexed to be unique
         Feeds.insert({
-            name: name,
             url: url
+        }, function(error, feedId){
+            
+            console.log('inserted', arguments);
+        
+            if(!!error){
+                feedId = Feeds.findOne({'url': url})._id;
+            }
+            console.log(feedId);
+
+            //insert feed for this user
+            UserFeeds.insert({
+                createdAt: new Date(),
+                name: name, 
+                userId: Meteor.userId(),
+                feedId: feedId
+            });
+
+
         });
 
         // Clear form
         ReactDOM.findDOMNode(this.refs.name).value = "";
         ReactDOM.findDOMNode(this.refs.url).value = "";
-
-        alert('feed added!');
     },
 
     render() {
