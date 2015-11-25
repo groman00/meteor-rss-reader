@@ -27,8 +27,8 @@ App = React.createClass({
         });
     },
 
-    handleSubmit(event) {
-        event.preventDefault();
+    handleSubmit(e) {
+        e.preventDefault();
 
         var name = ReactDOM.findDOMNode(this.refs.name).value.trim();
         var url = ReactDOM.findDOMNode(this.refs.url).value.trim();
@@ -39,12 +39,11 @@ App = React.createClass({
             url: url
         }, function(error, feedId){
             
-            console.log('inserted', arguments);
+            //console.log('inserted', arguments);
         
             if(!!error){
                 feedId = Feeds.findOne({'url': url})._id;
             }
-            console.log(feedId);
 
             //insert feed for this user
             UserFeeds.insert({
@@ -91,9 +90,12 @@ App = React.createClass({
                         <button type="submit">Add Feed</button>
                     </form>                    
                 </header>
-                <ul>
-                    {this.renderFeeds()}
-                </ul>
+                <div className="feeds">
+                    <ul>
+                        {this.renderFeeds()}
+                    </ul>
+                </div>
+                <div id="feedItemList"></div>
             </div>
         );
     }
